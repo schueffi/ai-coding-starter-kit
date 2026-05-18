@@ -18,7 +18,7 @@
 | PROJ-1 | Supabase Infrastructure Setup | P0 | Approved | None | [PROJ-1-supabase-infrastructure-setup.md](PROJ-1-supabase-infrastructure-setup.md) | 2026-05-18 |
 | PROJ-2 | User Authentication | P0 | Approved | PROJ-1 | [PROJ-2-user-authentication.md](PROJ-2-user-authentication.md) | 2026-05-18 |
 | PROJ-3 | Idea Feed & Browse | P0 | Deployed | PROJ-1 | [PROJ-3-idea-feed-browse.md](PROJ-3-idea-feed-browse.md) | 2026-05-18 |
-| PROJ-4 | Idea Submission | P0 | Planned | PROJ-1, PROJ-2 | [PROJ-4-idea-submission.md](PROJ-4-idea-submission.md) | 2026-05-18 |
+| PROJ-4 | Idea Submission | P0 | Architected | PROJ-1, PROJ-2 | [PROJ-4-idea-submission.md](PROJ-4-idea-submission.md) | 2026-05-18 |
 | PROJ-5 | Voting | P0 | Roadmap | PROJ-1, PROJ-2, PROJ-4 | — | 2026-05-18 |
 | PROJ-6 | Comments | P1 | Roadmap | PROJ-1, PROJ-2, PROJ-4 | — | 2026-05-18 |
 | PROJ-7 | Admin Panel | P1 | Roadmap | PROJ-1, PROJ-2 | — | 2026-05-18 |

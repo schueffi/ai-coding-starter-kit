@@ -1,6 +1,6 @@
 # PROJ-4: Idea Submission
 
-## Status: Planned
+## Status: Architected
 **Created:** 2026-05-18
 **Last Updated:** 2026-05-18
 
@@ -57,7 +57,64 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Component Structure
+
+```
+src/app/page.tsx  (Server Component — already loads user + categories)
+  └── Header
+        ├── SubmitIdeaButton.tsx        (Client — NEW)
+        │     └── IdeaSubmitModal.tsx   (Client — NEW)
+        │           ├── Title input + "X / 120" counter
+        │           ├── Description textarea + "X / 1000" counter
+        │           ├── Category select (populated from categories[])
+        │           ├── Inline error message
+        │           └── Submit button (loading state)
+        └── LogoutButton / Login+Register links  (existing, unchanged)
+```
+
+### Data Flow
+
+```
+page.tsx already fetches user + categories[]
+  → passes both to SubmitIdeaButton
+
+SubmitIdeaButton:
+  no user  →  renders as link → /auth/login
+  user     →  opens IdeaSubmitModal (receives categories[])
+
+IdeaSubmitModal:
+  form submit → browser Supabase client → ideas table (RLS enforces auth)
+    ✓ success → router.push("/?sort=new") + toast "Idee erfolgreich eingereicht!"
+    ✗ failure → inline error, input preserved
+```
+
+### Tech Decisions
+
+| Entscheidung | Warum |
+|---|---|
+| **Kein API-Route — direktes Supabase-Insert** | RLS-Policy `ideas_insert_auth` erzwingt Authentifizierung auf DB-Ebene. Gleiches Muster wie PROJ-3 Lesezugriffe — keine zusätzliche Schicht nötig. |
+| **react-hook-form + Zod** | Bereits in allen Auth-Formularen verwendet — konsistentes Muster, client-seitige Validierung mit `.trim()` für Whitespace-Behandlung |
+| **Categories aus page.tsx übergeben** | Werden dort bereits für `CategoryFilter` geladen — kein zusätzlicher DB-Call |
+| **`router.push("/?sort=new")` nach Erfolg** | Erzwingt Server-Component-Re-Render mit neuem Sort — neue Idee erscheint sofort oben |
+| **shadcn Dialog** | Bereits in `IdeaDetailOverlay` verwendet — gleiches barrierefreies Modal (Escape, Focus-Trap, Klick außerhalb) |
+
+### New Files
+
+```
+src/components/feed/SubmitIdeaButton.tsx   — immer sichtbarer Header-Button
+src/components/feed/IdeaSubmitModal.tsx    — Formular-Dialog
+```
+
+### Updated Files
+
+```
+src/app/page.tsx   — übergibt user + categories an SubmitIdeaButton im Header
+```
+
+### Dependencies
+
+Keine neuen Pakete — react-hook-form, zod, shadcn Dialog und sonner sind bereits installiert.
 
 ## QA Test Results
 _To be added by /qa_
