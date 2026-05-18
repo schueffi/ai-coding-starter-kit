@@ -13,9 +13,17 @@
 
 ## Features
 
-| ID | Feature | Status | Spec | Created |
-|----|---------|--------|------|---------|
+| ID | Feature | Priority | Status | Dependencies | Spec | Created |
+|----|---------|----------|--------|--------------|------|---------|
+| PROJ-1 | Supabase Infrastructure Setup | P0 | Roadmap | None | — | 2026-05-18 |
+| PROJ-2 | User Authentication | P0 | Roadmap | PROJ-1 | — | 2026-05-18 |
+| PROJ-3 | Idea Feed & Browse | P0 | Roadmap | PROJ-1 | — | 2026-05-18 |
+| PROJ-4 | Idea Submission | P0 | Roadmap | PROJ-1, PROJ-2 | — | 2026-05-18 |
+| PROJ-5 | Voting | P0 | Roadmap | PROJ-1, PROJ-2, PROJ-4 | — | 2026-05-18 |
+| PROJ-6 | Comments | P1 | Roadmap | PROJ-1, PROJ-2, PROJ-4 | — | 2026-05-18 |
+| PROJ-7 | Admin Panel | P1 | Roadmap | PROJ-1, PROJ-2 | — | 2026-05-18 |
+| PROJ-8 | Admin Role Management | P2 | Roadmap | PROJ-1, PROJ-2, PROJ-7 | — | 2026-05-18 |
 
 <!-- Add features above this line -->
 
-## Next Available ID: PROJ-1
+## Next Available ID: PROJ-9
