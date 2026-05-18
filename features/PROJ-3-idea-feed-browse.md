@@ -1,6 +1,6 @@
 # PROJ-3: Idea Feed & Browse
 
-## Status: Approved
+## Status: Deployed
 **Created:** 2026-05-18
 **Last Updated:** 2026-05-18
 
@@ -261,4 +261,15 @@ Keine neuen Pakete nötig — alle bereits installiert:
 - **Production Ready:** YES (Low bugs acceptable for MVP)
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-05-18
+**Production URL:** https://ai-coding-starter-kit-ten.vercel.app/
+**Platform:** Vercel (auto-deploy on push to `main`)
+
+**Pre-deployment checklist:**
+- [x] `npm run build` — passes
+- [x] QA Approved — 0 Critical/High bugs
+- [x] Security headers added to `next.config.ts`
+- [x] No secrets in git (`.env.local` gitignored)
+- [x] All Supabase migrations applied (001–004)
+- [x] Environment variables set in Vercel Dashboard (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
