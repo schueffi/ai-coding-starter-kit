@@ -33,11 +33,9 @@ export default async function Home({
 
   // Build ideas query with filters
   let ideasQuery = supabase.from("ideas").select(
-    `id, title, description, status, created_at,
+    `id, title, description, status, created_at, vote_count, comment_count,
      category:categories(id, name),
-     profiles(display_name),
-     votes(id),
-     comments(id)`,
+     profiles(display_name)`,
     { count: "exact" }
   )
 
@@ -45,15 +43,21 @@ export default async function Home({
     ideasQuery = ideasQuery.eq("category_id", categoryFilter)
   }
   if (searchQuery) {
-    ideasQuery = ideasQuery.or(
-      `title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`
-    )
+    ideasQuery = ideasQuery.textSearch("search_vector", searchQuery, {
+      type: "websearch",
+      config: "german",
+    })
   }
 
-  // Sort by creation date for now; backend will add vote_count ordering for "top"
-  ideasQuery = ideasQuery
-    .order("created_at", { ascending: false })
-    .range(offset, offset + PAGE_SIZE - 1)
+  if (sort === "top") {
+    ideasQuery = ideasQuery
+      .order("vote_count", { ascending: false })
+      .order("created_at", { ascending: false })
+  } else {
+    ideasQuery = ideasQuery.order("created_at", { ascending: false })
+  }
+
+  ideasQuery = ideasQuery.range(offset, offset + PAGE_SIZE - 1)
 
   const { data: rawIdeas, count: totalCount } = await ideasQuery
 
@@ -65,8 +69,8 @@ export default async function Home({
     created_at: idea.created_at,
     category: idea.category ?? null,
     profiles: idea.profiles ?? null,
-    vote_count: Array.isArray(idea.votes) ? idea.votes.length : 0,
-    comment_count: Array.isArray(idea.comments) ? idea.comments.length : 0,
+    vote_count: idea.vote_count ?? 0,
+    comment_count: idea.comment_count ?? 0,
   }))
 
   const totalPages = Math.max(1, Math.ceil((totalCount ?? 0) / PAGE_SIZE))

@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test"
 
 // AC13: Unauthenticated users on protected routes are redirected to /auth/login
-test("unauthenticated users are redirected to /auth/login", async ({ page }) => {
-  await page.goto("/")
+// Note: / is public (PROJ-3). Testing a genuinely protected route instead.
+test("unauthenticated users are redirected to /auth/login from protected routes", async ({ page }) => {
+  // /profile does not exist yet, so middleware redirects unknown protected paths
+  // Use a path that isn't public (not /, not /auth/*)
+  await page.goto("/settings")
   await expect(page).toHaveURL(/\/auth\/login/)
 })
 
@@ -176,22 +179,13 @@ test("reset password expired link error shows link to request new reset", async 
   await expect(page.locator(".text-red-600")).toBeVisible({ timeout: 8000 })
 })
 
-// AC9: Logout button is present on the home page
-test("logout button is visible on the home page for authenticated users", async ({ page }) => {
-  // The home page is only reachable when authenticated; verify the button exists in the DOM
-  // (without a real session, the proxy redirects to /auth/login — but the button is in the source)
-  const response = await page.goto("/")
-  // Either we land on home (if somehow authenticated) or get redirected to login
-  // Either way, verify the LogoutButton component is present in the page source
-  const html = await page.content()
-  // The page source should contain the logout button text or redirect to login
-  const isOnHome = page.url().includes("/auth/login") === false
-  if (isOnHome) {
-    await expect(page.getByRole("button", { name: "Abmelden" })).toBeVisible()
-  } else {
-    // Correctly redirected — the button will be visible once logged in (manual test)
-    expect(page.url()).toContain("/auth/login")
-  }
+// AC9: Home page shows login/register buttons for unauthenticated users
+// (PROJ-3 made / public; logout button only shows when authenticated — tested manually)
+test("home page shows login and register buttons for unauthenticated users", async ({ page }) => {
+  await page.goto("/")
+  await expect(page).toHaveURL("/")
+  await expect(page.getByRole("link", { name: "Anmelden" })).toBeVisible()
+  await expect(page.getByRole("link", { name: "Registrieren" })).toBeVisible()
 })
 
 // Responsive: mobile viewport — auth pages render correctly
