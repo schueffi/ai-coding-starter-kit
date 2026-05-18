@@ -75,9 +75,6 @@ test("registration shows error when passwords do not match", async ({ page }) =>
 // Edge case: invalid email format on registration
 test("registration shows error for invalid email format", async ({ page }) => {
   await page.goto("/auth/register")
-  // Disable HTML5 native validation so react-hook-form can display its error message
-  // (Without noValidate on the form, browsers intercept type="email" validation first)
-  await page.evaluate(() => document.querySelector("form")?.setAttribute("novalidate", ""))
   await page.getByLabel("E-Mail").fill("not-an-email")
   await page.getByLabel("Anzeigename").fill("Test User")
   await page.getByLabel("Passwort", { exact: true }).fill("password123")
@@ -89,8 +86,6 @@ test("registration shows error for invalid email format", async ({ page }) => {
 // Edge case: invalid email format on login
 test("login shows error for invalid email format", async ({ page }) => {
   await page.goto("/auth/login")
-  // Disable HTML5 native validation so react-hook-form can display its error message
-  await page.evaluate(() => document.querySelector("form")?.setAttribute("novalidate", ""))
   await page.getByLabel("E-Mail").fill("not-an-email")
   await page.getByLabel("Passwort").fill("password")
   await page.getByRole("button", { name: "Anmelden" }).click()

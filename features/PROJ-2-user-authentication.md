@@ -225,16 +225,8 @@ No new packages needed — all already installed:
 #### BUG-1: Logout not implemented — ✅ FIXED
 - **Fix:** Added `LogoutButton` component (`src/components/auth/LogoutButton.tsx`) with `supabase.auth.signOut()` and `window.location.href = "/auth/login"`. Button placed in the header on `src/app/page.tsx`.
 
-#### BUG-2: Auth forms missing `noValidate` attribute
-- **Severity:** Medium
-- **Steps to Reproduce:**
-  1. Open `/auth/register` or `/auth/login` in Chrome or Safari
-  2. Enter an invalid email like "not-an-email" in the E-Mail field
-  3. Click submit
-  4. Expected: React Hook Form's inline error "Bitte eine gültige E-Mail-Adresse eingeben" is shown
-  5. Actual: Browser's native HTML5 email validation intercepts the form submission; the react-hook-form error message never appears
-- **Fix:** Add `noValidate` to every `<form>` element in `LoginForm.tsx`, `RegisterForm.tsx`, `ForgotPasswordForm.tsx`, and `ResetPasswordForm.tsx`
-- **Priority:** Fix before deployment
+#### BUG-2: Auth forms missing `noValidate` attribute — ✅ FIXED
+- **Fix:** Added `noValidate` to all 4 form elements in `LoginForm.tsx`, `RegisterForm.tsx`, `ForgotPasswordForm.tsx`, and `ResetPasswordForm.tsx`. E2E test workarounds removed.
 
 #### BUG-3: Open redirect vulnerability in /auth/callback via `next` parameter
 - **Severity:** High
@@ -256,7 +248,7 @@ No new packages needed — all already installed:
 - **Bugs Found:** 3 total (0 critical, 2 high, 1 medium, 0 low)
 - **Security:** 1 High issue found (open redirect in callback route)
 - **Production Ready:** NO
-- **Recommendation:** Fix BUG-2 (noValidate) and BUG-3 (open redirect) before deployment
+- **Recommendation:** Fix BUG-3 (open redirect) before deployment
 
 ## Deployment
 _To be added by /deploy_
