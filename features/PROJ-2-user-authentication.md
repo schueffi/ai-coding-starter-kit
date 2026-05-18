@@ -1,6 +1,6 @@
 # PROJ-2: User Authentication
 
-## Status: Planned
+## Status: Architected
 **Created:** 2026-05-18
 **Last Updated:** 2026-05-18
 
@@ -60,7 +60,78 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### File Structure (new files)
+
+```
+src/app/
++-- middleware.ts                    (route protection — runs before every request)
++-- auth/
+|   +-- layout.tsx                  (centered auth layout, no navigation)
+|   +-- login/page.tsx
+|   +-- register/page.tsx
+|   +-- verify-email/page.tsx       ("check your email" screen)
+|   +-- forgot-password/page.tsx
+|   +-- reset-password/page.tsx
+|   +-- callback/route.ts           (Supabase auth callback — NOT a page)
+
+src/components/auth/
++-- LoginForm.tsx                   (email + password)
++-- RegisterForm.tsx                (email + display name + password + confirmation)
++-- ForgotPasswordForm.tsx          (email input only)
++-- ResetPasswordForm.tsx           (new password + confirmation)
+```
+
+### Data Flow
+
+```
+Registration
+  User submits form
+    → Supabase Auth creates account + sends verification email
+    → User redirected to /auth/verify-email
+
+Email Verification
+  User clicks link in email
+    → /auth/callback exchanges code for session
+    → Supabase trigger creates profile row (PROJ-1)
+    → Redirect to idea feed
+
+Login
+  User enters email + password
+    → Supabase Auth validates credentials + sets session cookie
+    → Redirect to idea feed
+
+Logout
+  User clicks "Sign out"
+    → Session cookie cleared
+    → Redirect to /auth/login
+
+Forgot Password
+  User enters email
+    → Supabase sends reset link (always same response — no email enumeration)
+
+Password Reset
+  User clicks link → /auth/callback → /auth/reset-password
+    → User sets new password
+    → Redirect to idea feed
+```
+
+### Tech Decisions
+
+| Decision | Rationale |
+|---|---|
+| **Next.js Middleware** for route protection | Runs before the page loads — fastest way to redirect unauthenticated users without flash-of-content |
+| **`/auth/callback` as API Route** (not a page) | Supabase sends the user back with a one-time code after email click — this route exchanges it for a real session |
+| **Cookie-based session** (not localStorage) | Works with Next.js Server Components; more secure than localStorage (no XSS risk) |
+| **`react-hook-form` + `zod`** | Already installed — validates inline without page reload; Zod enforces NIST rules in a type-safe way |
+| **Separate auth layout** | Login/register pages look different from the rest of the app (no header/nav) — a layout wrapper keeps this clean |
+
+### Dependencies
+
+No new packages needed — all already installed:
+- `@supabase/ssr` ✅ (installed in PROJ-1)
+- `react-hook-form` + `zod` ✅
+- shadcn/ui (`Form`, `Input`, `Button`, `Card`) ✅
 
 ## QA Test Results
 _To be added by /qa_
