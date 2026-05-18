@@ -168,7 +168,110 @@ src/lib/
 | `@supabase/ssr` | Server-side rendering support for Next.js (cookie-based sessions) |
 
 ## QA Test Results
-_To be added by /qa_
+
+**Tested:** 2026-05-18
+**Tester:** QA Engineer (AI)
+
+### Acceptance Criteria Status
+
+#### AC-1: Supabase project created and connected via env vars
+- [x] Project `vrzzmiuipgvhvhycaaiq` active in eu-central-1
+- [x] `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` present in `.env.local`
+
+#### AC-2: Supabase clients exported (no longer null)
+- [x] `src/lib/supabase.ts` exports browser client via `@supabase/ssr`
+- [x] `src/lib/supabase-server.ts` exports server client (correctly split per architecture design)
+
+#### AC-3: .env.local.example documents all required variables
+- [x] Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` documented with placeholder values
+- [x] File committed to git
+
+#### AC-4: .env.local in .gitignore
+- [x] Covered by `.env*.local` pattern in `.gitignore`
+- [x] `.env.local` is NOT tracked by git (verified via `git ls-files`)
+- [x] No secrets found in any tracked files
+
+#### AC-5: RLS enabled on all 6 tables
+- [x] profiles: RLS ON
+- [x] admin_roles: RLS ON
+- [x] categories: RLS ON
+- [x] ideas: RLS ON
+- [x] votes: RLS ON
+- [x] comments: RLS ON
+
+#### AC-6: 5 default categories seeded
+- [x] Feature Request, Bug Report, UI/UX, Performance, Sonstiges — all present
+
+#### AC-7: DB trigger auto-creates profile on signup
+- [x] Trigger `on_auth_user_created` exists on `auth.users` (INSERT)
+- [x] Uses `ON CONFLICT (id) DO NOTHING` — idempotent
+
+#### AC-8: Auth configured for email + password only
+- [x] No OAuth providers configured (Supabase project default)
+
+#### AC-9: All tables have created_at with default now()
+- [x] Verified on all 6 tables
+
+### Edge Cases Status
+
+#### EC-1: Missing env variables
+- [x] Next.js build succeeds with `.env.local` present; would fail clearly without it (non-null assertion `!`)
+
+#### EC-2: .env.local accidentally committed
+- [x] Blocked by `.gitignore` — confirmed not tracked
+
+#### EC-3: Duplicate vote attempt
+- [x] `UNIQUE(user_id, idea_id)` constraint present on `votes` table
+
+#### EC-4: profiles trigger idempotent
+- [x] `ON CONFLICT (id) DO NOTHING` confirmed in trigger body
+
+### Security Audit Results
+- [x] No secrets committed to git
+- [x] RLS enabled on all tables — data access controlled at DB level
+- [x] INSERT policies use `with_check (auth.uid() = user_id)` — prevents spoofing
+- [x] Admin helper functions use `SECURITY DEFINER` to avoid RLS recursion
+- [ ] **BUG-1**: SECURITY DEFINER functions publicly callable via REST API (see below)
+- [ ] **BUG-2**: `handle_updated_at()` has mutable search_path (see below)
+- [ ] **BUG-3**: RLS policies use bare `auth.uid()` instead of `(select auth.uid())` (see below)
+
+### Bugs Found
+
+#### BUG-1: SECURITY DEFINER functions publicly callable via REST API
+- **Severity:** High
+- **Steps to Reproduce:**
+  1. Call `GET /rest/v1/rpc/is_admin` with the anon key
+  2. Call `GET /rest/v1/rpc/is_super_admin` with the anon key
+  3. Call `POST /rest/v1/rpc/handle_new_user` with the anon key
+  4. Expected: 403 / function not accessible
+  5. Actual: Function executes (anon + authenticated roles have EXECUTE permission)
+- **Fix:** Revoke `EXECUTE` on `is_admin`, `is_super_admin`, `handle_new_user` from `anon` and `authenticated` roles via migration
+- **Ref:** https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable
+- **Priority:** Fix before deployment
+
+#### BUG-2: handle_updated_at() has mutable search_path
+- **Severity:** Medium
+- **Detail:** Function `public.handle_updated_at` was created without `set search_path = public`, making it vulnerable to search_path injection attacks.
+- **Fix:** Recreate function with `set search_path = public`
+- **Ref:** https://supabase.com/docs/guides/database/database-linter?lint=0011_function_search_path_mutable
+- **Priority:** Fix before deployment
+
+#### BUG-3: RLS policies re-evaluate auth.uid() per row
+- **Severity:** Medium
+- **Detail:** 7 RLS policies use bare `auth.uid()` instead of `(select auth.uid())`. Postgres re-evaluates the function for each row, causing suboptimal performance at scale. Affected: `profiles_update_own`, `ideas_insert_auth`, `ideas_update_own_or_admin`, `votes_insert_own`, `votes_delete_own`, `comments_insert_auth`, `comments_delete_own_or_admin`.
+- **Fix:** Replace `auth.uid()` with `(select auth.uid())` in all affected policies
+- **Ref:** https://supabase.com/docs/guides/database/database-linter?lint=0003_auth_rls_initplan
+- **Priority:** Fix before deployment
+
+### Additional Finding (not a bug)
+- **Bootstrap process undocumented:** The first `super_admin` cannot be assigned from the app UI — it must be inserted directly via the Supabase dashboard SQL editor: `INSERT INTO public.admin_roles (user_id, role) VALUES ('<your-user-uuid>', 'super_admin');`. This should be documented in the README or setup guide.
+
+### Summary
+- **Acceptance Criteria:** 9/9 passed
+- **Bugs Found:** 3 total (0 critical, 1 high, 2 medium, 0 low)
+- **Security:** Issues found — HIGH bug must be fixed
+- **Production Ready:** NO
+- **Recommendation:** Fix BUG-1 (HIGH) and BUG-2, BUG-3 (MEDIUM) before deployment
 
 ## Deployment
 _To be added by /deploy_
