@@ -54,7 +54,79 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### Component Structure
+
+```
+src/app/
++-- page.tsx                        (Server Component — liest URL-Parameter, lädt Daten)
+
+src/components/feed/
++-- SearchBar.tsx                   (Client — Sucheingabe, aktualisiert URL bei Submit)
++-- SortTabs.tsx                    (Client — "Top" | "Neu" Toggle, aktualisiert URL)
++-- CategoryFilter.tsx              (Client — Kategorie-Filterleiste, aktualisiert URL)
++-- IdeaCard.tsx                    (Client — Idee-Karte, öffnet Overlay bei Klick)
++-- IdeaDetailOverlay.tsx           (Client — Dialog mit vollständigem Idee-Inhalt)
++-- FeedPagination.tsx              (Client — Zurück/Weiter, aktualisiert URL)
++-- EmptyState.tsx                  (Shared — zwei Varianten: leer & kein Ergebnis)
+```
+
+### Data Flow
+
+```
+URL-Parameter (?q=...&category=...&sort=...&page=...)
+  → page.tsx (Server Component) liest Parameter
+    → Supabase-Abfrage mit allen Filtern (server-seitig)
+    → Gibt zurück: ideas[], totalCount, categories[]
+      → IdeaCard × bis zu 20
+        → Klick → IdeaDetailOverlay (Daten bereits geladen)
+      → EmptyState (wenn 0 Ergebnisse)
+      → FeedPagination
+  → CategoryFilter (erhält categories + aktive Auswahl)
+  → SortTabs (erhält aktuellen Sort-Wert)
+  → SearchBar (erhält aktuellen Suchbegriff)
+
+Filter/Sort/Suche/Seite ändern:
+  Client-Komponente aktualisiert URL per router.push()
+  → Neue Server-Render-Runde mit aktualisierten Parametern
+```
+
+### Data Model
+
+```
+Idea (aus bestehender Tabelle aus PROJ-1):
+  - ID
+  - Titel
+  - Beschreibung (vollständig gespeichert, auf Karte gekürzt)
+  - Kategorie (Verknüpfung zur categories-Tabelle)
+  - Autor (Verknüpfung zum Nutzerprofil — zeigt display_name)
+  - Erstellungsdatum
+  - Anzahl Votes (berechnet aus votes-Tabelle)
+  - Anzahl Kommentare (berechnet aus comments-Tabelle)
+
+Category (aus bestehender Tabelle aus PROJ-1):
+  - ID
+  - Name (z.B. "Feature Request", "Bug Report", ...)
+
+Alle Daten liegen bereits in Supabase — keine neuen Tabellen nötig.
+```
+
+### Tech Decisions
+
+| Entscheidung | Warum |
+|---|---|
+| **Server Component für die Hauptseite** | Daten werden serverseitig geladen — kein Flackern, kein leerer Zustand beim ersten Laden, SEO-freundlich |
+| **URL-Parameter als einzige Quelle der Wahrheit** | Filter, Suche, Sortierung und Seite stehen im URL → Links sind teilbar, Browser-Zurück-Taste funktioniert korrekt |
+| **PostgreSQL Full-Text Search** | Suche läuft direkt in der Datenbank — schnell, sicher, keine Client-seitige Filterlogik nötig |
+| **shadcn Dialog für Overlay** | Bereits installiert, barrierefrei (Escape-Taste, Fokus-Trap), kein zusätzliches Paket nötig |
+| **Keine API-Route nötig** | Server Components können Supabase direkt abfragen — eine extra API-Schicht wäre unnötige Komplexität für reine Lesezugriffe |
+
+### Dependencies
+
+Keine neuen Pakete nötig — alle bereits installiert:
+- `@supabase/ssr` ✅ (Supabase-Client für Server Components)
+- shadcn/ui `Dialog` ✅ (für Overlay)
+- shadcn/ui `Badge`, `Card`, `Button`, `Input` ✅ (für Karten und Filter)
 
 ## QA Test Results
 _To be added by /qa_
