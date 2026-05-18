@@ -1,6 +1,6 @@
 # PROJ-1: Supabase Infrastructure Setup
 
-## Status: In Progress
+## Status: Approved
 **Created:** 2026-05-18
 **Last Updated:** 2026-05-18
 
@@ -231,9 +231,9 @@ src/lib/
 - [x] RLS enabled on all tables — data access controlled at DB level
 - [x] INSERT policies use `with_check (auth.uid() = user_id)` — prevents spoofing
 - [x] Admin helper functions use `SECURITY DEFINER` to avoid RLS recursion
-- [ ] **BUG-1**: SECURITY DEFINER functions publicly callable via REST API (see below)
-- [ ] **BUG-2**: `handle_updated_at()` has mutable search_path (see below)
-- [ ] **BUG-3**: RLS policies use bare `auth.uid()` instead of `(select auth.uid())` (see below)
+- [x] **BUG-1 FIXED**: EXECUTE revoked from PUBLIC on all SECURITY DEFINER functions (migration 003)
+- [x] **BUG-2 FIXED**: `handle_updated_at()` recreated with `set search_path = public` (migration 003)
+- [x] **BUG-3 FIXED**: All 7 RLS policies updated to use `(select auth.uid())` (migration 003)
 
 ### Bugs Found
 
@@ -268,10 +268,11 @@ src/lib/
 
 ### Summary
 - **Acceptance Criteria:** 9/9 passed
-- **Bugs Found:** 3 total (0 critical, 1 high, 2 medium, 0 low)
-- **Security:** Issues found — HIGH bug must be fixed
-- **Production Ready:** NO
-- **Recommendation:** Fix BUG-1 (HIGH) and BUG-2, BUG-3 (MEDIUM) before deployment
+- **Bugs Found:** 3 found, 3 fixed (0 critical, 1 high → fixed, 2 medium → fixed, 0 low)
+- **Security:** PASS — Supabase Security Advisor: 0 warnings
+- **Performance:** PASS — Supabase Performance Advisor: 0 warnings (only INFO-level unused indexes, expected on empty DB)
+- **Production Ready:** YES
+- **Recommendation:** Ready to deploy
 
 ## Deployment
 _To be added by /deploy_
