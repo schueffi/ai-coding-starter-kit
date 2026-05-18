@@ -1,6 +1,6 @@
 # PROJ-3: Idea Feed & Browse
 
-## Status: Planned
+## Status: In Progress
 **Created:** 2026-05-18
 **Last Updated:** 2026-05-18
 
