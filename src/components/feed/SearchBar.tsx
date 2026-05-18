@@ -52,7 +52,7 @@ export function SearchBar({ initialValue = "" }: { initialValue?: string }) {
           </button>
         )}
       </div>
-      <Button type="submit" className="bg-[#005CA9] hover:bg-[#004A8A] text-white rounded-lg">
+      <Button type="submit" aria-label="Suchen" className="bg-[#005CA9] hover:bg-[#004A8A] text-white rounded-lg">
         <Search className="w-4 h-4" />
       </Button>
     </form>

@@ -244,19 +244,13 @@ Keine neuen Pakete nötig — alle bereits installiert:
 
 ### Bugs Found
 
-#### BUG-1: EmptyState "empty" text differs from spec (Low)
+#### BUG-1: EmptyState "empty" text differs from spec (Low) — FIXED
 - **Severity:** Low
-- **Steps:** Remove all ideas from DB → load `/`
-- **Expected (spec):** "Noch keine Ideen. Sei der Erste!"
-- **Actual:** Heading "Noch keine Ideen" + body "Sei der Erste und reiche deine Idee ein!" (slightly different phrasing)
-- **Impact:** Cosmetic only. Link to `/auth/register` is present. Intent is identical.
-- **Priority:** Fix before deploy if copy accuracy is important; otherwise acceptable.
+- **Fix:** Updated `src/components/feed/EmptyState.tsx` — body text changed to "Sei der Erste!" to match spec.
 
-#### BUG-2: Search submit button has no accessible text label (Low)
+#### BUG-2: Search submit button has no accessible text label (Low) — FIXED
 - **Severity:** Low
-- **Detail:** `<Button type="submit">` in `SearchBar.tsx` contains only a Lucide `<Search />` icon with no `aria-label`. Screen readers cannot describe the button action.
-- **Fix:** Add `aria-label="Suchen"` to the submit button.
-- **Priority:** Fix before deploy for accessibility compliance.
+- **Fix:** Added `aria-label="Suchen"` to the submit button in `src/components/feed/SearchBar.tsx`.
 
 ### Summary
 - **Acceptance Criteria:** 11/11 passed

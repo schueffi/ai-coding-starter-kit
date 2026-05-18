@@ -10,7 +10,7 @@ export function EmptyState({ type }: { type: "empty" | "no-results" }) {
           <Lightbulb className="w-8 h-8 text-[#005CA9]" />
         </div>
         <h3 className="text-lg font-semibold text-[#1A1F2E] mb-2">Noch keine Ideen</h3>
-        <p className="text-[#6B7280] mb-6">Sei der Erste und reiche deine Idee ein!</p>
+        <p className="text-[#6B7280] mb-6">Sei der Erste!</p>
         <Button asChild className="bg-[#005CA9] hover:bg-[#004A8A] text-white rounded-lg">
           <Link href="/auth/register">Jetzt registrieren</Link>
         </Button>
