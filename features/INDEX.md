@@ -15,7 +15,7 @@
 
 | ID | Feature | Priority | Status | Dependencies | Spec | Created |
 |----|---------|----------|--------|--------------|------|---------|
-| PROJ-1 | Supabase Infrastructure Setup | P0 | Roadmap | None | — | 2026-05-18 |
+| PROJ-1 | Supabase Infrastructure Setup | P0 | Planned | None | [PROJ-1-supabase-infrastructure-setup.md](PROJ-1-supabase-infrastructure-setup.md) | 2026-05-18 |
 | PROJ-2 | User Authentication | P0 | Roadmap | PROJ-1 | — | 2026-05-18 |
 | PROJ-3 | Idea Feed & Browse | P0 | Roadmap | PROJ-1 | — | 2026-05-18 |
 | PROJ-4 | Idea Submission | P0 | Roadmap | PROJ-1, PROJ-2 | — | 2026-05-18 |
