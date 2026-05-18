@@ -13,7 +13,7 @@ VoteBoard ist ein eigenständiges Produkt-Feedback-Board, auf dem Nutzer Ideen e
 |----------|---------|--------|
 | P0 (MVP) | Supabase Infrastructure Setup | Planned |
 | P0 (MVP) | User Authentication | Planned |
-| P0 (MVP) | Idea Feed & Browse | Roadmap |
+| P0 (MVP) | Idea Feed & Browse | Planned |
 | P0 (MVP) | Idea Submission | Roadmap |
 | P0 (MVP) | Voting | Roadmap |
 | P1 | Comments | Roadmap |
