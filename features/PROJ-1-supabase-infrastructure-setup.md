@@ -1,6 +1,6 @@
 # PROJ-1: Supabase Infrastructure Setup
 
-## Status: Planned
+## Status: Architected
 **Created:** 2026-05-18
 **Last Updated:** 2026-05-18
 
@@ -109,7 +109,63 @@
 <!-- Sections below are added by subsequent skills -->
 
 ## Tech Design (Solution Architect)
-_To be added by /architecture_
+
+### System Structure
+
+```
+Browser (Next.js App)
++-- Supabase Browser Client (src/lib/supabase.ts)
+|   +-- Auth: login, registration, session management
+|   +-- DB: read/write ideas, votes, comments
+|
+Server (Next.js API Routes / Server Components)
++-- Supabase Server Client (src/lib/supabase-server.ts)
+    +-- Secure admin operations
+    +-- Server-side database queries
+
+Supabase Cloud
++-- Auth Service (email + password only)
++-- PostgreSQL Database
+|   +-- profiles       (linked to auth users via trigger)
+|   +-- categories     (pre-seeded with 5 default categories)
+|   +-- ideas
+|   +-- votes
+|   +-- comments
+|   +-- admin_roles
++-- Row Level Security (data access control on DB level)
++-- DB Trigger (auto-creates profile row on user signup)
+```
+
+### File Structure (new files)
+
+```
+project-root/
++-- .env.local.example              (new — env variable template, committed to git)
++-- .env.local                      (local only, never committed)
+supabase/
++-- migrations/
+    +-- 001_initial_schema.sql      (all 6 tables + RLS policies + trigger)
+    +-- 002_seed_categories.sql     (5 default categories)
+src/lib/
++-- supabase.ts                     (updated — browser client activated)
++-- supabase-server.ts              (new — server client for API routes)
+```
+
+### Tech Decisions
+
+| Decision | Rationale |
+|---|---|
+| Two Supabase clients (browser + server) | Browser client runs with the user's session (frontend); server client runs in API routes with secure cookie-based auth |
+| Migration files instead of direct SQL in dashboard | Reproducible, version-controlled, auditable |
+| DB trigger for profile creation | Guarantees every new user has a profile row immediately — no manual step or race condition |
+| RLS on all tables | Data access is enforced at the database level — even a buggy API route cannot leak other users' data |
+
+### Dependencies
+
+| Package | Purpose |
+|---|---|
+| `@supabase/supabase-js` | Main client for database queries and auth |
+| `@supabase/ssr` | Server-side rendering support for Next.js (cookie-based sessions) |
 
 ## QA Test Results
 _To be added by /qa_
