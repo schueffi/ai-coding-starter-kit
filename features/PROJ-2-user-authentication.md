@@ -170,7 +170,8 @@ No new packages needed — all already installed:
 - [ ] **MANUAL TEST REQUIRED** — requires a verified account in Supabase
 
 #### AC-9: Logout clears session and redirects to /auth/login
-- [ ] **BUG (High):** No logout button or `signOut()` call exists anywhere in the codebase. Logged-in users cannot sign out.
+- [x] "Abmelden" button in header calls `supabase.auth.signOut()` and redirects to `/auth/login`
+- [ ] **MANUAL TEST REQUIRED** — requires a real authenticated session to verify full flow
 
 #### AC-10: Forgot password always shows generic message
 - [x] "Falls ein Konto mit dieser E-Mail existiert" shown regardless of whether the email is registered
@@ -221,14 +222,8 @@ No new packages needed — all already installed:
 
 ### Bugs Found
 
-#### BUG-1: Logout not implemented
-- **Severity:** High
-- **Steps to Reproduce:**
-  1. Log in with a valid account
-  2. Try to find a logout button or "Sign out" option
-  3. Expected: A logout button exists that calls `supabase.auth.signOut()` and redirects to `/auth/login`
-  4. Actual: No logout UI element or `signOut()` call exists anywhere in the codebase
-- **Priority:** Fix before deployment
+#### BUG-1: Logout not implemented — ✅ FIXED
+- **Fix:** Added `LogoutButton` component (`src/components/auth/LogoutButton.tsx`) with `supabase.auth.signOut()` and `window.location.href = "/auth/login"`. Button placed in the header on `src/app/page.tsx`.
 
 #### BUG-2: Auth forms missing `noValidate` attribute
 - **Severity:** Medium
@@ -261,7 +256,7 @@ No new packages needed — all already installed:
 - **Bugs Found:** 3 total (0 critical, 2 high, 1 medium, 0 low)
 - **Security:** 1 High issue found (open redirect in callback route)
 - **Production Ready:** NO
-- **Recommendation:** Fix BUG-1 (logout), BUG-2 (noValidate), BUG-3 (open redirect) before deployment
+- **Recommendation:** Fix BUG-2 (noValidate) and BUG-3 (open redirect) before deployment
 
 ## Deployment
 _To be added by /deploy_
