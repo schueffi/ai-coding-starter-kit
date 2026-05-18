@@ -8,6 +8,7 @@ import { CategoryFilter } from "@/components/feed/CategoryFilter"
 import { IdeaCard } from "@/components/feed/IdeaCard"
 import { EmptyState } from "@/components/feed/EmptyState"
 import { FeedPagination } from "@/components/feed/FeedPagination"
+import { SubmitIdeaButton } from "@/components/feed/SubmitIdeaButton"
 import type { IdeaWithDetails } from "@/types/feed"
 
 const PAGE_SIZE = 20
@@ -82,18 +83,21 @@ export default async function Home({
       <header className="bg-white border-b border-[#E2E6EA] sticky top-0 z-10">
         <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-[#1A1F2E]">VoteBoard</h1>
-          {user ? (
-            <LogoutButton />
-          ) : (
-            <div className="flex items-center gap-2">
-              <Button asChild variant="ghost" size="sm" className="text-[#005CA9] hover:bg-[#E8F0F9]">
-                <Link href="/auth/login">Anmelden</Link>
-              </Button>
-              <Button asChild size="sm" className="bg-[#005CA9] hover:bg-[#004A8A] text-white rounded-lg">
-                <Link href="/auth/register">Registrieren</Link>
-              </Button>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <SubmitIdeaButton user={user} categories={categories ?? []} />
+            {user ? (
+              <LogoutButton />
+            ) : (
+              <>
+                <Button asChild variant="ghost" size="sm" className="text-[#005CA9] hover:bg-[#E8F0F9]">
+                  <Link href="/auth/login">Anmelden</Link>
+                </Button>
+                <Button asChild size="sm" className="bg-[#005CA9] hover:bg-[#004A8A] text-white rounded-lg">
+                  <Link href="/auth/register">Registrieren</Link>
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </header>
 

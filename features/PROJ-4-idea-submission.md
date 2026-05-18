@@ -116,6 +116,18 @@ src/app/page.tsx   — übergibt user + categories an SubmitIdeaButton im Header
 
 Keine neuen Pakete — react-hook-form, zod, shadcn Dialog und sonner sind bereits installiert.
 
+## Implementation Notes (Frontend — 2026-05-18)
+
+**New files created:**
+- `src/components/feed/SubmitIdeaButton.tsx` — Always-visible header button; unauthenticated users get a Link to `/auth/login`, authenticated users open IdeaSubmitModal
+- `src/components/feed/IdeaSubmitModal.tsx` — Dialog with react-hook-form + Zod validation; title (max 120) + description (max 1000) both show live "X / N" counters; category select pre-populated from passed-in categories[]; inline submit error on failure with input preserved; `router.push("/?sort=new")` + sonner toast on success; form resets when modal closes
+
+**Updated files:**
+- `src/app/page.tsx` — Added `SubmitIdeaButton` import; header now renders `<SubmitIdeaButton user={user} categories={categories ?? []} />` alongside auth links
+
+**Deviations from spec:**
+- None. Direct Supabase insert via browser client (RLS `ideas_insert_auth` policy enforces auth at DB level). No new packages required.
+
 ## QA Test Results
 _To be added by /qa_
 
