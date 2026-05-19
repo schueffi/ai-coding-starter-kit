@@ -266,4 +266,15 @@ None.
 - **Production Ready:** YES
 
 ## Deployment
-_To be added by /deploy_
+
+**Deployed:** 2026-05-19
+**Production URL:** https://ai-coding-starter-kit-ten.vercel.app/
+**Platform:** Vercel (auto-deploy on push to `main`)
+
+**Pre-deployment checklist:**
+- [x] `npm run build` — passes
+- [x] QA Approved — 0 Critical/High bugs
+- [x] Security headers in `next.config.ts` (from PROJ-3)
+- [x] No secrets in git (`.env.local` gitignored)
+- [x] No new migrations — existing `ideas` table + RLS policies used
+- [x] Environment variables already set in Vercel Dashboard
